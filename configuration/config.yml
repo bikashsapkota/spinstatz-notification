@@ -1,0 +1,36 @@
+default:
+  topic:
+    kafka_topics:
+      - audio_added
+      - audio_played
+
+    audio_added: audio_added
+    audio_played: audio_played
+
+
+  consumer_group: notification
+  message:
+    source_app_id: notification
+    sender_name: SpinStatz
+    sender_email: info@spinstatz.com
+    sender_number: +14153600840
+
+  webhook_url: http://10.0.30.5/notification_event/
+  webhook_secret_key: 098af83d-e531-sitegranny-4eb9-a1b5-0412ba78fc3f
+
+production:
+  base_url: https://spinstatz.net/
+  pdf_url: https://storage.googleapis.com/
+  logfile: /go/backend_log.log
+  # log_file: /go/backend_log.log
+
+staging:
+  base_url: http://dev.spinstatz.net/
+  pdf_url: https://storage.googleapis.com/front_end/receipt/
+  logfile: /go/backend_log_dev.log
+
+
+local:
+  base_url: http://127.0.0.1:8000/
+  pdf_url: https://storage.googleapis.com/front_end/receipt/
+  logfile: /var/www/vhosts/spinstatz.net/dev.spinstatz.net/backend_log.log
