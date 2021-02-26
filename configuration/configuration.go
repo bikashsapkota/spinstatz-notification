@@ -37,6 +37,17 @@ type Conf struct {
 	Message          message `yaml:"message"`
 	WebhookUrl       string  `yaml:"webhook_url"`
 	WebhookSecretKey string  `yaml:"webhook_secret_key"`
+	OnesignalAppId 	string	`yaml:"onesignal_app_id"`
+	PusherToken		string	`yaml:"pusher_token"`
+	RedisHost		string	`yaml:"redis_host"`
+	RedisPort		string	`yaml:"redis_port"`
+	RedisPassword	string	`yaml:"redis_password"`
+	MailHost	string	`yaml:"mail_host"`
+	MailPort	int	`yaml:"mail_port"`
+	MailUsername	string	`yaml:"mail_username"`
+	MailPassword	string	`yaml:"mail_password"`
+	MailEncryption	string	`yaml:"mail_encryption"`
+	MailFrom	string	`yaml:"mail_from"`
 }
 
 type DBConf struct {

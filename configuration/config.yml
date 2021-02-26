@@ -22,15 +22,37 @@ production:
   base_url: https://spinstatz.net/
   pdf_url: https://storage.googleapis.com/
   logfile: /go/backend_log.log
+  onesignal_app_id: 052ba830-5379-47a4-bc3e-5c12e186de10
+  redis_host: redis-12902.c73.us-east-1-2.ec2.cloud.redislabs.com
+  redis_port: 12902
+  redis_password: RtEwuhB1OOkVF1rZS4foQnDRbgycg04P
+  pusher_token: pt
   # log_file: /go/backend_log.log
 
 staging:
   base_url: http://dev.spinstatz.net/
   pdf_url: https://storage.googleapis.com/front_end/receipt/
   logfile: /go/backend_log_dev.log
+  onesignal_app_id: 052ba830-5379-47a4-bc3e-5c12e186de10
+  redis_host: redis-12902.c73.us-east-1-2.ec2.cloud.redislabs.com
+  redis_port: 12902
+  redis_password: RtEwuhB1OOkVF1rZS4foQnDRbgycg04P
+  pusher_token: pt
+  mail_host: email-smtp.us-east-1.amazonaws.com
+  mail_port: 587
+  mail_username: AKIA5PYMNSMSJHZAGXXE
+  mail_password: BLHvlg2vVy4yR5bQZhXX4yliGMhLgM80be6MEbkjp5M5
+  mail_encryption: tls
+  mail_from: noreply@spinstatz.com
+
 
 
 local:
   base_url: http://127.0.0.1:8000/
   pdf_url: https://storage.googleapis.com/front_end/receipt/
   logfile: /var/www/vhosts/spinstatz.net/dev.spinstatz.net/backend_log.log
+  onesignal_app_id: 052ba830-5379-47a4-bc3e-5c12e186de10
+  redis_host: redis-12902.c73.us-east-1-2.ec2.cloud.redislabs.com
+  redis_port: 12902
+  redis_password: RtEwuhB1OOkVF1rZS4foQnDRbgycg04P
+  pusher_token: pt
