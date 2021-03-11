@@ -1,13 +1,13 @@
 package controller
 
 import (
+	"crypto/tls"
 	"github.com/bikashsapkota/spinstatz-notification/configuration"
 	"github.com/bikashsapkota/spinstatz-notification/model"
 	"github.com/tbalthazar/onesignal-go"
-	"log"
 	gomail "gopkg.in/mail.v2"
+	"log"
 	"strings"
-	"crypto/tls"
 )
 
 var (
@@ -54,14 +54,14 @@ func HandleOnesignalNotification(msgObj model.NotificationMessage)  {
 }
 
 func HandleEmailNotification(msgObg model.NotificationMessage){
-	log.Println(msgObg.EmailData["to"], msgObg.EmailData["msg"], configuration.Config.MailHost, configuration.Config.MailPort, configuration.Config.MailUsername ,configuration.Config.MailPassword)
+	log.Println(msgObg.EmailData["to"], msgObg.EmailData["message"], configuration.Config.MailHost, configuration.Config.MailPort, configuration.Config.MailUsername ,configuration.Config.MailPassword)
 	to := msgObg.EmailData["to"]
 	message := msgObg.EmailData["message"]
 
 	m := gomail.NewMessage()
 	m.SetHeader("From", configuration.Config.MailFrom)
 	m.SetHeader("To", to)
-	m.SetHeader("Subject","Withdraw Requested")
+	m.SetHeader("Subject",msgObg.EmailData["subject"])
 	m.SetBody("text/plain", message)
 
 	d := gomail.NewDialer(configuration.Config.MailHost, configuration.Config.MailPort, configuration.Config.MailUsername, configuration.Config.MailPassword)
