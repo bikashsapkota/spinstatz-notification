@@ -34,9 +34,9 @@ staging:
   pdf_url: https://storage.googleapis.com/front_end/receipt/
   logfile: /go/backend_log_dev.log
   onesignal_app_id: 052ba830-5379-47a4-bc3e-5c12e186de10
-  redis_host: redis-12902.c73.us-east-1-2.ec2.cloud.redislabs.com
-  redis_port: 12902
-  redis_password: RtEwuhB1OOkVF1rZS4foQnDRbgycg04P
+  redis_host: redis-14251.c246.us-east-1-4.ec2.cloud.redislabs.com
+  redis_port: "14251"
+  redis_password: wiG5GkwTcQt1nvHyB4xRJ7L4q0zCpKSJ
   pusher_token: pt
   mail_host: email-smtp.us-east-1.amazonaws.com
   mail_port: 587

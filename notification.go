@@ -4,11 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"github.com/bikashsapkota/spinstatz-notification/configuration"
+	"github.com/bikashsapkota/spinstatz-notification/controller"
 	"github.com/bikashsapkota/spinstatz-notification/model"
 	"github.com/go-redis/redis/v8"
-	"github.com/jasonlvhit/gocron"
 	"log"
-	"github.com/bikashsapkota/spinstatz-notification/controller"
 
 	db_model "github.com/bikashsapkota/go_db/model"
 )
@@ -24,11 +23,11 @@ func list_contains(list[] string, str string) bool {
 
 var (
 	ctx = context.Background()
-	rdb = redis.NewClient(&redis.Options{
-		Addr:     "redis-12902.c73.us-east-1-2.ec2.cloud.redislabs.com:12902",
-		Password: "RtEwuhB1OOkVF1rZS4foQnDRbgycg04P",
-		DB:       0,
-		})
+	//rdb = redis.NewClient(&redis.Options{
+	//	Addr:     "redis-12902.c73.us-east-1-2.ec2.cloud.redislabs.com:12902",
+	//	Password: "RtEwuhB1OOkVF1rZS4foQnDRbgycg04P",
+	//	DB:       0,
+	//	})
 )
 
 
@@ -78,6 +77,12 @@ func handleMessage(message string){
 }
 
 func StartRadisConsumer(){
+	rdb := redis.NewClient(&redis.Options{
+		Addr:     configuration.Config.RedisHost+ ":" + configuration.Config.RedisPort,
+		Password: configuration.Config.RedisPassword,
+		DB:       0,
+	})
+	log.Println("Connected to redis:", configuration.Config.RedisHost+ ":" + configuration.Config.RedisPort)
 	sub := rdb.Subscribe(ctx, "mychannel")
 	ch := sub.Channel()
 	for msg := range ch {
@@ -87,25 +92,25 @@ func StartRadisConsumer(){
 }
 
 
-func StartRadisProducer()  {
-	log.Println("publishing redis")
-	rdb.Publish(
-		ctx, "mychannel",
-		`{
-			"source_app_id":"web",
-			"created_at":"2006-01-02T15:04:05.1+05:45",
-			"destination":["push","web"],
-			"one_signal_token": "f8e1b64b-8866-4fb8-bf61-16797a2252c8",
-			"type": "payment_withdrawl_requested"
-		}`)
-}
+//func StartRadisProducer()  {
+//	log.Println("publishing redis")
+//	rdb.Publish(
+//		ctx, "mychannel",
+//		`{
+//			"source_app_id":"web",
+//			"created_at":"2006-01-02T15:04:05.1+05:45",
+//			"destination":["push","web"],
+//			"one_signal_token": "f8e1b64b-8866-4fb8-bf61-16797a2252c8",
+//			"type": "payment_withdrawl_requested"
+//		}`)
+//}
 
 func main()  {
 	configuration.LoadConfig()
 
 	StartRadisConsumer()
-	gocron.Every(10).Seconds().Do(StartRadisProducer)
-	<-gocron.Start()
+	//gocron.Every(10).Seconds().Do(StartRadisProducer)
+	//<-gocron.Start()
 	log.Println("end")
 }
 
