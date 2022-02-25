@@ -3,16 +3,16 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"log"
+
+	db_model "github.com/bikashsapkota/go_db/model"
 	"github.com/bikashsapkota/spinstatz-notification/configuration"
 	"github.com/bikashsapkota/spinstatz-notification/controller"
 	"github.com/bikashsapkota/spinstatz-notification/model"
 	"github.com/go-redis/redis/v8"
-	"log"
-
-	db_model "github.com/bikashsapkota/go_db/model"
 )
 
-func list_contains(list[] string, str string) bool {
+func list_contains(list []string, str string) bool {
 	for _, element := range list {
 		if element == str {
 			return true
@@ -30,8 +30,7 @@ var (
 	//	})
 )
 
-
-func handleMessage(message string){
+func handleMessage(message string) {
 	MsgObj := model.NotificationMessage{}
 	error_unMarshal := json.Unmarshal([]byte(message), &MsgObj)
 	if error_unMarshal != nil {
@@ -43,54 +42,77 @@ func handleMessage(message string){
 	log.Println("destination ", MsgObj.Destination)
 
 	for _, element := range MsgObj.Destination {
-		log.Println("processing "+element+" Notification")
+		log.Println("processing " + element + " Notification")
 		if element == configuration.Database {
-			log.Println("Saving notification to database")
-			notification := db_model.Notifications{
-				CreatedAt: MsgObj.CreatedAt,
-				UserId: MsgObj.UserId,
-				Message: MsgObj.Message,
-				Href: MsgObj.Href,
-				Seen: MsgObj.Seen,
-				Type: MsgObj.Type,
-				ReferenceId: MsgObj.ReferenceId,
-				Subject: controller.Get_subject(MsgObj.Type),
-				Image: MsgObj.Image,
+			if MsgObj.BulkNotificationData != nil {
+				if MsgObj.BulkNotificationData["type"] == "audio_added" {
+					djsIdWithGenres, err := configuration.DBConfig.DBInterface.GetDjUserIdWithGenre(MsgObj.BulkNotificationData["genre_id"])
+					if err != nil {
+						continue
+					}
 
+					for _, id := range *djsIdWithGenres {
+						notification := db_model.Notifications{
+							CreatedAt:   MsgObj.CreatedAt,
+							UserId:      id,
+							Message:     MsgObj.Message,
+							Href:        MsgObj.Href,
+							Seen:        MsgObj.Seen,
+							Type:        MsgObj.Type,
+							ReferenceId: MsgObj.ReferenceId,
+							Subject:     controller.Get_subject(MsgObj.Type),
+							Image:       MsgObj.Image,
+						}
+						log.Println(notification)
+						log.Println(configuration.DBConfig.DBInterface.SaveNotification(notification))
+					}
+
+				}
+			} else {
+				log.Println("Saving notification to database")
+				notification := db_model.Notifications{
+					CreatedAt:   MsgObj.CreatedAt,
+					UserId:      MsgObj.UserId,
+					Message:     MsgObj.Message,
+					Href:        MsgObj.Href,
+					Seen:        MsgObj.Seen,
+					Type:        MsgObj.Type,
+					ReferenceId: MsgObj.ReferenceId,
+					Subject:     controller.Get_subject(MsgObj.Type),
+					Image:       MsgObj.Image,
+				}
+				log.Println(notification)
+				log.Println(configuration.DBConfig.DBInterface.SaveNotification(notification))
 			}
-			log.Println(notification)
-			log.Println(configuration.DBConfig.DBInterface.SaveNotification(notification))
 
-		}else if element == configuration.Email {
+		} else if element == configuration.Email {
 			controller.HandleEmailNotification(MsgObj)
-		}else if element == configuration.Live {
+		} else if element == configuration.Live {
 
-		}else if element == configuration.Push {
+		} else if element == configuration.Push {
 			controller.HandleOnesignalNotification(MsgObj)
-		}else {
+		} else {
 
 		}
 	}
 
-
-
 }
 
-func StartRadisConsumer(){
+func StartRadisConsumer() {
 	rdb := redis.NewClient(&redis.Options{
-		Addr:     configuration.Config.RedisHost+ ":" + configuration.Config.RedisPort,
+		Addr:     configuration.Config.RedisHost + ":" + configuration.Config.RedisPort,
 		Password: configuration.Config.RedisPassword,
 		DB:       0,
 	})
-	log.Println("Connected to redis:", configuration.Config.RedisHost+ ":" + configuration.Config.RedisPort)
-	sub := rdb.Subscribe(ctx, "mychannel")
+	log.Println("Connected to redis:", configuration.Config.RedisHost+":"+configuration.Config.RedisPort)
+	sub := rdb.PSubscribe(ctx, "*")
 	ch := sub.Channel()
+	log.Println("Subscribing to redis ", configuration.Config.RedisHost)
 	for msg := range ch {
 		log.Println(msg.Channel, msg.Payload)
 		handleMessage(msg.Payload)
 	}
 }
-
 
 //func StartRadisProducer()  {
 //	log.Println("publishing redis")
@@ -105,7 +127,7 @@ func StartRadisConsumer(){
 //		}`)
 //}
 
-func main()  {
+func main() {
 	configuration.LoadConfig()
 
 	StartRadisConsumer()
@@ -113,5 +135,3 @@ func main()  {
 	//<-gocron.Start()
 	log.Println("end")
 }
-
-
