@@ -2,15 +2,15 @@ package configuration
 
 import (
 	"fmt"
+	"github.com/Shopify/sarama"
+	"github.com/bikashsapkota/go_db"
+	"github.com/fatih/structs"
+	"gopkg.in/yaml.v2"
 	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"reflect"
-	"github.com/Shopify/sarama"
-	"github.com/bikashsapkota/go_db"
-	"github.com/fatih/structs"
-	"gopkg.in/yaml.v2"
 )
 
 const (
@@ -20,6 +20,7 @@ const (
 var globalConfig GlobalConfig
 var Config Conf
 var DBConfig DBConf
+
 //var KafkaConfig KafkaConf
 
 type GlobalConfig struct {
@@ -37,23 +38,22 @@ type Conf struct {
 	Message          message `yaml:"message"`
 	WebhookUrl       string  `yaml:"webhook_url"`
 	WebhookSecretKey string  `yaml:"webhook_secret_key"`
-	OnesignalAppId 	string	`yaml:"onesignal_app_id"`
-	PusherToken		string	`yaml:"pusher_token"`
-	RedisHost		string	`yaml:"redis_host"`
-	RedisPort		string	`yaml:"redis_port"`
-	RedisPassword	string	`yaml:"redis_password"`
-	MailHost	string	`yaml:"mail_host"`
-	MailPort	int	`yaml:"mail_port"`
-	MailUsername	string	`yaml:"mail_username"`
-	MailPassword	string	`yaml:"mail_password"`
-	MailEncryption	string	`yaml:"mail_encryption"`
-	MailFrom	string	`yaml:"mail_from"`
+	OnesignalAppId   string  `yaml:"onesignal_app_id"`
+	PusherToken      string  `yaml:"pusher_token"`
+	RedisHost        string  `yaml:"redis_host"`
+	RedisPort        string  `yaml:"redis_port"`
+	RedisPassword    string  `yaml:"redis_password"`
+	MailHost         string  `yaml:"mail_host"`
+	MailPort         int     `yaml:"mail_port"`
+	MailUsername     string  `yaml:"mail_username"`
+	MailPassword     string  `yaml:"mail_password"`
+	MailEncryption   string  `yaml:"mail_encryption"`
+	MailFrom         string  `yaml:"mail_from"`
 }
 
 type DBConf struct {
 	DBInterface go_db.DatabaseService
 }
-
 
 type topic struct {
 	EventAdded    string   "event_added"
@@ -146,7 +146,6 @@ func NewDB() go_db.DatabaseService {
 func NewTestDB() go_db.DatabaseService {
 	return &go_db.MockDatabase{}
 }
-
 
 func fillStruct(fields []*structs.Field, mapData interface{}) {
 	switch reflect.TypeOf(mapData).Kind() {
